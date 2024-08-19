@@ -57,3 +57,31 @@ tbl_summary(
 	modify_footnote(update = everything() ~ NA) |>
 	modify_header(label = "**Variable**", p.value = "**P**")
 
+# In class exercise Customization of `tbl_summary()`
+
+tbl_summary(
+	nlsy,
+	by = sex_cat,
+	include = c(race_eth_cat, region_cat,
+							income, starts_with("sleep")),
+	label = list(
+		race_eth_cat ~ "Race/ethnicity",
+		region_cat ~ "Region",
+		income ~ "Income",
+		sleep_wkdy ~ "Sleep Weekdays",
+		sleep_wknd ~ "Sleep Weekend"
+	),
+
+	statistic = list( income ~ "{p10},{p90}",
+										starts_with ("sleep") ~ "{min},{max}"),
+		digits = list (income~3,
+									 starts_with("sleep")~1),
+		missing_text = "Missing")|>
+
+add_p(test = list(all_continuous() ~ "t.test",
+									all_categorical() ~ "chisq.test")) |>
+	add_overall(col_label = "**Total**") |>
+	bold_labels() |>
+	modify_footnote(update = everything() ~ "https://www.nlsinfo.org/content/cohorts/nlsy79/topical-guide/household/race-ethnicity-immigration-data") |>
+	modify_header(label = "**Variable**", p.value = "**P**")
+
