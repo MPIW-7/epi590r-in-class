@@ -1,5 +1,6 @@
 library(tidyverse)
 library(gtsummary)
+install.packages("broom.helpers")
 
 nlsy_cols <- c("glasses", "eyesight", "sleep_wkdy", "sleep_wknd",
 							 "id", "nsibs", "samp", "race_eth", "sex", "region",
@@ -49,6 +50,8 @@ linear_model_int <- lm(income ~ sex_cat*age_bir + race_eth_cat,
 logistic_model <- glm(glasses ~ eyesight_cat + sex_cat + income,
 											data = nlsy, family = binomial())
 
+Poisson_model <- glm(nsibs ~ sex_cat + age_bir + race_eth_cat,
+									 data = nlsy, family = poisson())
 
 ## Tables
 
@@ -94,4 +97,41 @@ tbl_int <- tbl_regression(
 ## Table comparing the models with and without interaction
 
 tbl_merge(list(tbl_no_int, tbl_int),
+					tab_spanner = c("**Model 1**", "**Model 2**"))
+
+# Univariate regression Class Activity
+
+tbl_uvregression(
+	nlsy,
+	x = sex_cat,
+	include = c(nsibs,sleep_wkdy,sleep_wknd,
+						 income),
+	method = lm)
+
+# Poisson regression Class Activity
+
+Poisson_model <- glm(nsibs ~ sex_cat + age_bir + race_eth_cat,
+										 data = nlsy, family = poisson())
+
+tbl_regression(
+	Poisson_model,
+	exponentiate = TRUE,
+	label = list(
+		sex_cat ~ "Sex"
+	))
+
+# Log binomial regression
+
+model1 <- tbl_regression(
+	x = nlsy$glasses,
+	include = c(eyesight_cat,sex_cat),
+	method = glm,
+	method.args = list(family = binomial(link = "log")),
+	exponentiate = TRUE)
+
+tidy_fun = partial(tidy_robust, vcov = "HC1")
+
+# Create table comparing Log-Binomial and Log-Poisson
+
+tbl_merge(list(model1, model2),
 					tab_spanner = c("**Model 1**", "**Model 2**"))
