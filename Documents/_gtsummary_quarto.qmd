@@ -50,7 +50,9 @@ tbl_summary(
   nlsy,
   by = sex_cat,
   include = c(sex_cat, race_eth_cat, region_cat,
-              eyesight_cat, glasses, age_bir))
+              eyesight_cat, glasses, age_bir)) |>
+	modify_caption("**Table 1. Descriptive Statistics**")
+```
 ```
 
 
